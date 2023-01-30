@@ -1,0 +1,15 @@
+<section class="w-[500px] bg-white">
+  <div class="message-container flex flex-col">
+    <div *ngFor="let message of messages">
+      <div class="message" [ngClass]="{ 'received': message.isReceived, 'sent': !message.isReceived }">
+        {{ message.content }}
+      </div>
+    </div>
+  </div>
+
+  <div class="input-container">
+    <input pInputText [(ngModel)]="newMessage" (keyup.enter)="addMessage()" placeholder="Type your message here...">
+    <button pButton (click)="addMessage()" label="Send"></button>
+  </div>
+</section>
+
