@@ -1,0 +1,7 @@
+{
+  "authority": "https://cinchy.net/cinchysso",
+  "cinchyRootUrl": "https://cinchy.net",
+  "clientId": "cinchy-messages-prod",
+  "redirectUri": "https://dx.cinchy.net/dx/cinchy-messages/",
+  "version": "1.0.0"
+}

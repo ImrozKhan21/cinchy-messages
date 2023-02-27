@@ -1,5 +1,13 @@
-<section class="w-[500px] bg-white">
-  <div class="message-container flex flex-col">
+<section class="w-full bg-white">
+  <div class="header-container flex gap-3 p-3 itemse-center" *ngIf="people">
+    <img *ngIf="selectedPerson.photo" [src]="selectedPerson.photo" alt="recipient image"
+         class="rounded-[50%]" style="width: 60px; height: 60px">
+    <p-dropdown [disabled]="isIframe" [options]="people" [(ngModel)]="selectedPerson" (onChange)="personChanged()" optionLabel="Name"></p-dropdown>
+  </div>
+
+  <hr>
+
+  <div class="message-container h-[400px] overflow-y-auto flex flex-col" #messageContainer>
     <div *ngFor="let message of messages">
       <div class="message" [ngClass]="{ 'received': message.isReceived, 'sent': !message.isReceived }">
         {{ message.content }}
@@ -7,8 +15,12 @@
     </div>
   </div>
 
-  <div class="input-container">
-    <input pInputText [(ngModel)]="newMessage" (keyup.enter)="addMessage()" placeholder="Type your message here...">
+  <div class="pl-5" *ngIf="showIsTyping">
+    <p class="text-[12px]">{{selectedPerson.Name}} is typing...</p>
+  </div>
+
+  <div class="input-container gap-5 flex justify-between">
+    <input class="w-full" pInputText [(ngModel)]="newMessage" (keyup.enter)="addMessage()" placeholder="Type your message here...">
     <button pButton (click)="addMessage()" label="Send"></button>
   </div>
 </section>
