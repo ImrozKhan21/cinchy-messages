@@ -39,6 +39,7 @@ export class MessageComponent implements OnInit, OnDestroy {
         const currentPersonId = params['id'] ? params['id'] : sessionStorage.getItem('id');
         if (currentPersonId) {
           this.selectedPerson = this.people.find(person => person.Id == currentPersonId) as IPeople;
+          console.log('111 person ID', currentPersonId, this.selectedPerson);
         }
         this.selectedPerson = this.selectedPerson ? this.selectedPerson : this.people[0];
         this.getHistory();
@@ -98,6 +99,11 @@ export class MessageComponent implements OnInit, OnDestroy {
       this.scrollToLast();
     }
     this.newMessage = '';
+  }
+
+  async clearConversationForUser() {
+    await this.apiCallsService.clearHistory(this.selectedPerson.Id).toPromise();
+    this.messages = [];
   }
 
   ngOnDestroy() {

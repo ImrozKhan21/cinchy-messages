@@ -1,8 +1,12 @@
 <section class="w-full bg-white">
-  <div class="header-container flex gap-3 p-3 itemse-center" *ngIf="people">
-    <img *ngIf="selectedPerson.photo" [src]="selectedPerson.photo" alt="recipient image"
-         class="rounded-[50%]" style="width: 60px; height: 60px">
-    <p-dropdown [disabled]="isIframe" [options]="people" [(ngModel)]="selectedPerson" (onChange)="personChanged()" optionLabel="Name"></p-dropdown>
+  <div class="header-container flex gap-3 p-3 items-center justify-between" *ngIf="people">
+    <div class="flex items-center gap-3">
+      <img *ngIf="selectedPerson.photo" [src]="selectedPerson.photo" alt="recipient image"
+           class="rounded-[50%]" style="width: 60px; height: 60px">
+      <p-dropdown [disabled]="isIframe" [options]="people" [(ngModel)]="selectedPerson" (onChange)="personChanged()" optionLabel="Name"></p-dropdown>
+    </div>
+
+  <p (click)="clearConversationForUser()" class="text-gray-500 text-sm cursor-pointer">Clear conversation</p>
   </div>
 
   <hr>

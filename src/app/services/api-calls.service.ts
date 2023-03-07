@@ -32,6 +32,11 @@ export class ApiCallsService {
     return this.getResponse(url);
   }
 
+  clearHistory(id: number) {
+    const url = `/API/Zero-Integration App Factory/Delete All Messages by User?%40personId=${id}`;
+    return this.getResponse(url);
+  }
+
   executeCinchyQueries(name: string, domain: string, options?: any, isInsert?: boolean): Observable<any> {
     return this.cinchyService.executeQuery(domain, name, options).pipe(
       map(resp => isInsert ? resp : resp?.queryResult?.toObjectArray())
