@@ -2,26 +2,93 @@
   height: calc(100vh - 155px);
   overflow-y: scroll;
   padding: 10px;
+  border: solid 1px #EEE;
+  display: flex;
+  flex-direction: column;
+}
+
+.messages {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
 }
 
 .message {
-  max-width: 60%;
-  padding: 10px;
-  border-radius: 10px;
-  margin-bottom: 10px;
+  border-radius: 20px;
+  padding: 8px 15px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
 }
 
-.received {
-  background-color: lightgray;
-  float: left;
-  text-align: left;
+.yours {
+  align-items: flex-start;
 }
 
-.sent {
-  background-color: cornflowerblue;
-  float: right;
-  text-align: right;
+.yours .message {
+  margin-right: 25%;
+  background-color: #eee;
+  position: relative;
 }
+
+.yours .message.last:before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  bottom: 0;
+  left: -7px;
+  height: 20px;
+  width: 20px;
+  background: #eee;
+  border-bottom-right-radius: 15px;
+}
+.yours .message.last:after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  left: -10px;
+  width: 10px;
+  height: 20px;
+  background: white;
+  border-bottom-right-radius: 10px;
+}
+
+.mine {
+  align-items: flex-end;
+}
+
+.mine .message {
+  color: white;
+  margin-left: 25%;
+  background: #0085D1;
+  position: relative;
+}
+
+.mine .message.last:before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  bottom: 0;
+  right: -8px;
+  height: 20px;
+  width: 20px;
+  background: #0085D1;
+  border-bottom-left-radius: 15px;
+}
+
+.mine .message.last:after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  right: -10px;
+  width: 10px;
+  height: 20px;
+  background: white;
+  border-bottom-left-radius: 10px;
+}
+
 
 .input-container {
   padding: 10px;
@@ -41,7 +108,7 @@ button {
   padding: 10px 20px;
   border-radius: 10px;
   border: none;
-  background-color: cornflowerblue;
+  background-color: #007aff;
   color: white;
   cursor: pointer;
 }

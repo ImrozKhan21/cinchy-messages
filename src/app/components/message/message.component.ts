@@ -15,7 +15,7 @@ import {isPlatformBrowser} from "@angular/common";
 export class MessageComponent implements OnInit, OnDestroy {
   @ViewChild('messageContainer') messageContainer: ElementRef;
 
-  messages: { content: string, isReceived: boolean }[] = [];
+  messages: { content: string, isReceived: boolean, showDelivered?: boolean }[] = [];
   newMessage = '';
 
   people: IPeople[];
@@ -24,6 +24,7 @@ export class MessageComponent implements OnInit, OnDestroy {
   showIsTyping = false;
   isIframe: boolean;
   history: IHistory[];
+  showDelivered = false;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -50,10 +51,11 @@ export class MessageComponent implements OnInit, OnDestroy {
   async getHistory() {
     const id = this.selectedPerson.Id;
     const history = await this.apiCallsService.getQuestionsHistory(id).toPromise();
-    history.forEach((message: IHistory) => {
+    history.forEach((message: IHistory, index:number) => {
       this.messages.push({
         content: message.Question,
         isReceived: false,
+        showDelivered: index === history.length - 1
       });
       this.messages.push({
         content: message.Answer,
@@ -78,13 +80,18 @@ export class MessageComponent implements OnInit, OnDestroy {
     if (!this.newMessage) {
       return;
     }
+    this.messages.forEach(message => message.showDelivered = false);
     this.messages.push({
       content: this.newMessage,
       isReceived: false,
+      showDelivered: true
     });
+    const messageForUpdate = this.newMessage;
+    this.newMessage = '';
     this.showIsTyping = true;
+    this.scrollToLast();
     try {
-      const newResponse = await this.apiCallsService.insertQuestion(this.selectedPerson.Id, this.newMessage).toPromise();
+      const newResponse = await this.apiCallsService.insertQuestion(this.selectedPerson.Id, messageForUpdate).toPromise();
       this.newMessageResponse = newResponse[0].Answer;
       this.messages.push({
         content: this.newMessageResponse,

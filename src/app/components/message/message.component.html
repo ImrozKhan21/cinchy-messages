@@ -1,30 +1,42 @@
 <section class="w-full bg-white">
   <div class="header-container flex gap-3 p-3 items-center justify-between" *ngIf="people">
     <div class="flex items-center gap-3">
-      <img *ngIf="selectedPerson.photo" [src]="selectedPerson.photo" alt="recipient image"
+      <img *ngIf="selectedPerson.photo || selectedPerson.dataPhoto" [src]="selectedPerson.dataPhoto ?
+      'data:image/png;base64,' + selectedPerson.dataPhoto : selectedPerson.photo" alt="recipient image"
            class="rounded-[50%]" style="width: 60px; height: 60px">
-      <p-dropdown [disabled]="isIframe" [options]="people" [(ngModel)]="selectedPerson" (onChange)="personChanged()" optionLabel="Name"></p-dropdown>
+      <p-dropdown *ngIf="!isIframe" [options]="people" [(ngModel)]="selectedPerson" (onChange)="personChanged()"
+                  optionLabel="Name"></p-dropdown>
+
+      <p *ngIf="isIframe">{{selectedPerson.Name}}</p>
     </div>
 
-  <p (click)="clearConversationForUser()" class="text-gray-500 text-sm cursor-pointer">Clear conversation</p>
+    <p (click)="clearConversationForUser()" class="text-gray-500 text-sm cursor-pointer">Clear conversation</p>
   </div>
 
   <hr>
 
-  <div class="message-container h-[400px] overflow-y-auto flex flex-col" #messageContainer>
-    <div *ngFor="let message of messages">
-      <div class="message" [ngClass]="{ 'received': message.isReceived, 'sent': !message.isReceived }">
-        {{ message.content }}
+  <div class="message-container overflow-y-auto flex flex-col" #messageContainer>
+    <div class="flex flex-col">
+      <div class="chat">
+        <div *ngFor="let message of messages;let i=index" class="messages last"
+             [ngClass]="{ 'yours': message.isReceived, 'mine': !message.isReceived}">
+          <div class="message last" [innerHTML]="message.content">
+          </div>
+          <p *ngIf="message.showDelivered"
+             class="flex justify-end text-sm text-gray-500">Delivered</p>
+
+        </div>
       </div>
+    </div>
+
+    <div class="pl-5 mt-auto" *ngIf="showIsTyping">
+      <p class="text-[12px] mr-1">{{selectedPerson.Name}} is typing...</p>
     </div>
   </div>
 
-  <div class="pl-5" *ngIf="showIsTyping">
-    <p class="text-[12px]">{{selectedPerson.Name}} is typing...</p>
-  </div>
-
   <div class="input-container gap-5 flex justify-between">
-    <input class="w-full" pInputText [(ngModel)]="newMessage" (keyup.enter)="addMessage()" placeholder="Type your message here...">
+    <input class="w-full" pInputText [(ngModel)]="newMessage" (keyup.enter)="addMessage()"
+           placeholder="Type your message here...">
     <button pButton (click)="addMessage()" label="Send"></button>
   </div>
 </section>

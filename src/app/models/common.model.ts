@@ -10,6 +10,7 @@ export interface IPeople {
   Name: string;
   Id: number;
   photo: string;
+  dataPhoto: string;
 }
 
 export interface IOption {
