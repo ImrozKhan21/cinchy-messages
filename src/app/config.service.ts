@@ -13,6 +13,7 @@ import {isPlatformBrowser} from "@angular/common";
 export class ConfigService {
   enviornmentConfig!: IEnv;
   fullScreenHeight: any;
+  showPersonLogo: any;
 
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string,
               @Inject(PLATFORM_ID) private platformId: any) {
@@ -23,21 +24,23 @@ export class ConfigService {
   setRowAndFormId() {
     if (isPlatformBrowser(this.platformId)) {
       let id = this.getQueryStringValue('id', window.location.search);
-      let pageId = this.getQueryStringValue('pageId', window.location.search);
+      let showPersonLogo = this.getQueryStringValue('showPersonLogo', window.location.search);
       if (!id) {
         id = this.getQueryStringValue('id', document.referrer);
-        pageId = this.getQueryStringValue('pageId', document.referrer);
+        showPersonLogo = this.getQueryStringValue('showPersonLogo', document.referrer);
       }
       id && sessionStorage.setItem('id', id);
-      // pageId && sessionStorage.setItem('pageId', pageId);
+      showPersonLogo && sessionStorage.setItem('showPersonLogo', showPersonLogo);
 
       if (!sessionStorage.getItem('id') || id) {
         id && id != "null" ? sessionStorage.setItem('id', id) : sessionStorage.setItem('id', '');
       }
 
-      /*   if (!sessionStorage.getItem('pageId') || pageId) {
-           pageId && pageId != "null" ? sessionStorage.setItem('pageId', pageId) : sessionStorage.setItem('pageId', '');
-         }*/
+         if (!sessionStorage.getItem('showPersonLogo') || showPersonLogo) {
+           showPersonLogo && showPersonLogo != "null" ? sessionStorage.setItem('showPersonLogo', showPersonLogo)
+             : sessionStorage.setItem('showPersonLogo', '');
+         }
+         this.showPersonLogo = showPersonLogo;
       console.log('session', sessionStorage.getItem('id'));
     }
   }
@@ -69,13 +72,15 @@ export class ConfigService {
       this.fullScreenHeight = parseInt(event.data.toString().substring(21), 10) + 4;
       console.log('receiveMessage  IF', this.fullScreenHeight)
       localStorage.setItem('fullScreenHeight', this.fullScreenHeight.toString());
-      const elements = document.getElementsByClassName('full-height-element');
+      const elements: any = document.getElementsByClassName('full-height-element');
       // tslint:disable-next-line:prefer-for-of
       for (let i = 0; i < elements.length; i++) {
         setTimeout(() => {
           if(window.location !== window.parent.location){
             // @ts-ignore
-            elements[i]['style'].height = this.fullScreenHeight + 'px';
+            if (this.showPersonLogo !== 'false') {
+              elements[i]['style'].height = this.fullScreenHeight + 'px';
+            }
           }
         }, 500)
       }

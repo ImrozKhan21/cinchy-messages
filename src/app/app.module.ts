@@ -13,6 +13,8 @@ import {MessageService} from "primeng/api";
 import {DropdownModule} from "primeng/dropdown";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {RouterModule} from "@angular/router";
+import {AutoCompleteModule} from "primeng/autocomplete";
+import {TooltipModule} from "primeng/tooltip";
 
 export function appLoadFactory(config: ConfigService) {
   return () => config.loadConfig().toPromise();
@@ -27,17 +29,19 @@ export function getBaseUrl() {
     AppComponent,
     MessageComponent
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    RouterModule.forRoot([]),
-    InputTextModule,
-    ButtonModule,
-    DividerModule,
-    CinchyModule.forRoot(),
-    DropdownModule
-  ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        RouterModule.forRoot([]),
+        InputTextModule,
+        ButtonModule,
+        DividerModule,
+        CinchyModule.forRoot(),
+        DropdownModule,
+        AutoCompleteModule,
+        TooltipModule
+    ],
   providers: [
     {
       provide: APP_INITIALIZER,

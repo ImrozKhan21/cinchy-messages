@@ -1,13 +1,25 @@
 <section class="w-full bg-white">
-  <div class="header-container flex gap-3 p-3 items-center justify-between" *ngIf="people">
+  <div class="header-container flex gap-3 p-3 items-center justify-between">
     <div class="flex items-center gap-3">
-      <img *ngIf="selectedPerson.photo || selectedPerson.dataPhoto" [src]="selectedPerson.dataPhoto ?
+      <img *ngIf="showPersonLogo && (selectedPerson?.photo || selectedPerson?.dataPhoto)" [src]="selectedPerson.dataPhoto ?
       'data:image/png;base64,' + selectedPerson.dataPhoto : selectedPerson.photo" alt="recipient image"
            class="rounded-[50%]" style="width: 60px; height: 60px">
-      <p-dropdown *ngIf="!isIframe" [options]="people" [(ngModel)]="selectedPerson" (onChange)="personChanged()"
-                  optionLabel="Name"></p-dropdown>
 
-      <p *ngIf="isIframe">{{selectedPerson.Name}}</p>
+      <ng-container *ngIf="filteredAutoCompleteOptions">
+        <p-autoComplete styleClass="w-[350px]" *ngIf="!dontShowDropdown"
+                        [(ngModel)]="selectedPerson" [suggestions]="filteredAutoCompleteOptions"
+                        (completeMethod)="filterAutoCompleteOptions($event)" [field]="'Name'"
+                        (onSelect)="itemSelected($event)"
+                        (onClear)="reset()"
+                        [dropdown]="true"
+                        type="search"
+                        [placeholder]="'Search...'"
+                        [forceSelection]="true"
+                        [lazy]="true">
+        </p-autoComplete>
+      </ng-container>
+
+      <p *ngIf="showPersonLogo && dontShowDropdown && selectedPerson">{{selectedPerson.Name}}</p>
     </div>
 
     <p (click)="clearConversationForUser()" class="text-gray-500 text-sm cursor-pointer">Clear conversation</p>
@@ -15,12 +27,29 @@
 
   <hr>
 
-  <div class="message-container overflow-y-auto flex flex-col" #messageContainer>
+  <div class="message-container overflow-y-auto flex flex-col" #messageContainer
+       [ngClass]="!showPersonLogo ? 'more-height': ''">
     <div class="flex flex-col">
       <div class="chat">
         <div *ngFor="let message of messages;let i=index" class="messages last"
              [ngClass]="{ 'yours': message.isReceived, 'mine': !message.isReceived}">
-          <div class="message last" [innerHTML]="message.content">
+
+          <div class="flex items-center message-wrapper gap-2">
+            <ng-container *ngIf="message.isReceived">
+              <img *ngIf="selectedPerson?.photo || selectedPerson?.dataPhoto" [src]="selectedPerson.dataPhoto ?
+      'data:image/png;base64,' + selectedPerson.dataPhoto : selectedPerson.photo" alt="recipient image"
+                   [pTooltip]="'Answered by' + ' ' + selectedPerson.Name"
+                   class="rounded-[50%]" style="width: 30px; height: 30px">
+            </ng-container>
+
+            <ng-container *ngIf="!message.isReceived && userDetails">
+              <img [src]="userDetails.photo ? 'data:image/png;base64,' + userDetails.photo : ''" alt="recipient image"
+                   [pTooltip]="'Asked by' + ' ' + userDetails.name"
+                   class="rounded-[50%]" style="width: 30px; height: 30px">
+            </ng-container>
+
+            <div class="message last" [innerHTML]="message.content"></div>
+
           </div>
           <p *ngIf="message.showDelivered"
              class="flex justify-end text-sm text-gray-500">Delivered</p>

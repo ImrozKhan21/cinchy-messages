@@ -5,6 +5,10 @@
   border: solid 1px #EEE;
   display: flex;
   flex-direction: column;
+
+  &.more-height {
+    height: calc(100vh - 120px);
+  }
 }
 
 .messages {
@@ -60,9 +64,12 @@
 
 .mine .message {
   color: white;
-  margin-left: 25%;
   background: #0085D1;
   position: relative;
+}
+
+.mine .message-wrapper {
+  margin-left: 25%;
 }
 
 .mine .message.last:before {

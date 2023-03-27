@@ -1,3 +1,5 @@
-<div *ngIf="loginDone" class="bg-black h-[100%] flex items-center justify-center">
-  <app-message class="w-full"></app-message>
+<div class="flex items-center justify-center">
+  <app-message *ngIf="loginDone" [userDetails]="userDetails" class="w-full"></app-message>
 </div>
+
+

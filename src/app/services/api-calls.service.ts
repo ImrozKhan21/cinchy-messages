@@ -17,6 +17,11 @@ export class ApiCallsService {
               private configService: ConfigService, private appStateService: AppStateService) {
   }
 
+  getCurrentPersonDetails(id: number) {
+    const url = `//API/Zero-Integration%20App%20Factory/Get%20Ask%20Cinchy%20Person%20Details?%40Id=${id}`;
+    return this.getResponse(url);
+  }
+
   getPeople() {
     const url = `/API/Zero-Integration%20App%20Factory/Ask%20Cinchy%20People%20Names`;
     return this.getResponse(url);

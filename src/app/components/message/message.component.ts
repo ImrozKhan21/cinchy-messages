@@ -1,8 +1,8 @@
-import {Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild} from '@angular/core';
+import {Component, ElementRef, Inject, Input, OnDestroy, OnInit, PLATFORM_ID, ViewChild} from '@angular/core';
 import {ApiCallsService} from "../../services/api-calls.service";
-import {ReplaySubject, takeUntil} from "rxjs";
+import {lastValueFrom, ReplaySubject, takeUntil} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
-import {IHistory, IPeople} from "../../models/common.model";
+import {IHistory, IPeople, IUser} from "../../models/common.model";
 import {WindowRefService} from "../../services/window-ref.service";
 import {isPlatformBrowser} from "@angular/common";
 
@@ -13,6 +13,7 @@ import {isPlatformBrowser} from "@angular/common";
 })
 
 export class MessageComponent implements OnInit, OnDestroy {
+  @Input() userDetails: IUser;
   @ViewChild('messageContainer') messageContainer: ElementRef;
 
   messages: { content: string, isReceived: boolean, showDelivered?: boolean }[] = [];
@@ -24,7 +25,10 @@ export class MessageComponent implements OnInit, OnDestroy {
   showIsTyping = false;
   isIframe: boolean;
   history: IHistory[];
-  showDelivered = false;
+  filteredAutoCompleteOptions: IPeople[];
+  autoCompleteOptions: IPeople[];
+  dontShowDropdown: boolean;
+  showPersonLogo: boolean;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -34,15 +38,21 @@ export class MessageComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.isIframe = this.windowRefService.inIframe();
-    this.people = await this.apiCallsService.getPeople().toPromise();
-    this.activatedRoute.queryParams.pipe(takeUntil(this.destroyed$)).subscribe(params => {
+    this.activatedRoute.queryParams.pipe(takeUntil(this.destroyed$)).subscribe(async (params) => {
       if (isPlatformBrowser(this.platformId)) {
         const currentPersonId = params['id'] ? params['id'] : sessionStorage.getItem('id');
+        const showPersonLogo = params['showPersonLogo'] ? params['showPersonLogo'] : sessionStorage.getItem('showPersonLogo');
+        this.showPersonLogo = showPersonLogo !== "false";
         if (currentPersonId) {
-          this.selectedPerson = this.people.find(person => person.Id == currentPersonId) as IPeople;
-          console.log('111 person ID', currentPersonId, this.selectedPerson);
+          const resp = await lastValueFrom(this.apiCallsService.getCurrentPersonDetails(currentPersonId));
+          this.selectedPerson = resp[0];
+          this.dontShowDropdown = true;
+        } else {
+          this.people = await lastValueFrom(this.apiCallsService.getPeople());
+          this.filteredAutoCompleteOptions = [...this.people];
+          this.autoCompleteOptions = [...this.people];
         }
-        this.selectedPerson = this.selectedPerson ? this.selectedPerson : this.people[0];
+        this.selectedPerson = this.selectedPerson ? this.selectedPerson : this.filteredAutoCompleteOptions[0];
         this.getHistory();
       }
     });
@@ -51,6 +61,7 @@ export class MessageComponent implements OnInit, OnDestroy {
   async getHistory() {
     const id = this.selectedPerson.Id;
     const history = await this.apiCallsService.getQuestionsHistory(id).toPromise();
+    this.messages = [];
     history.forEach((message: IHistory, index:number) => {
       this.messages.push({
         content: message.Question,
@@ -63,6 +74,23 @@ export class MessageComponent implements OnInit, OnDestroy {
       })
     });
     this.scrollToLast();
+  }
+
+  filterAutoCompleteOptions(event: any) {
+    let query = event.query;
+    this.filteredAutoCompleteOptions = this.autoCompleteOptions.filter((item: any) => {
+      return item.Name?.toLowerCase().indexOf(query.toLowerCase()) == 0;
+    });
+  }
+
+  itemSelected(event: any) {
+    this.selectedPerson = event;
+    this.messages = [];
+    this.getHistory();
+  }
+
+  reset() {
+    this.selectedPerson = {} as IPeople;
   }
 
   scrollToLast() {

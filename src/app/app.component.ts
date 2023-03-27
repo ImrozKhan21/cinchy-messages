@@ -16,6 +16,7 @@ export class AppComponent implements OnInit {
   title = 'cinchy-messages';
   loginDone!: boolean;
   userDetails: IUser;
+  fullScreenHeight: number = 697;
 
   constructor(private appStateService: AppStateService, private cinchyService: CinchyService,
               private apiCallsService: ApiCallsService, @Inject(PLATFORM_ID) private platformId: any,
@@ -46,12 +47,16 @@ export class AppComponent implements OnInit {
     this.apiCallsService.setUserDetails().then(val => {
       this.userDetails = val;
       this.appStateService.userDetails = this.userDetails;
+      console.log('111 userDetails', this.userDetails);
+
       this.appStateService.setUserDetailsSub(this.userDetails);
       const userDetail = localStorage.getItem('hub-user-details') || '';
       //  console.log('In user details', val);
       if (!val && userDetail) {
         //  console.log('In no user details if', userDetail);
         this.userDetails = userDetail ? JSON.parse(userDetail) : null;
+        console.log('111 2userDetails', this.userDetails);
+
         this.appStateService.userDetails = this.userDetails;
         this.appStateService.setUserDetailsSub(this.userDetails);
       }
@@ -63,6 +68,8 @@ export class AppComponent implements OnInit {
         console.error(e);
         const userDetail = localStorage.getItem('hub-user-details') || '';
         this.userDetails = userDetail ? JSON.parse(userDetail) : null;
+        console.log('111 3 userDetails', this.userDetails);
+
         this.appStateService.userDetails = this.userDetails;
         this.appStateService.setUserDetailsSub(this.userDetails);
         console.error(e);
